@@ -9,7 +9,7 @@ import { classRoutes }       from './routes/classes.js';
 import { studentRoutes }     from './routes/students.js';
 import { teacherClassRoutes } from './routes/teacherClasses.js';
 import { attendanceRoutes }  from './routes/attendance.js';
-
+import { feeRoutes } from './routes/fees.js';
 const server = Fastify({ logger: true });
 
 const PORT = Number(process.env.PORT) || 3001;
@@ -37,6 +37,7 @@ await server.register(classRoutes,        { prefix: '/api/classes' });
 await server.register(studentRoutes,      { prefix: '/api/students' });
 await server.register(teacherClassRoutes, { prefix: '/api/teacher-classes' });
 await server.register(attendanceRoutes,   { prefix: '/api/attendance' });
+await server.register(feeRoutes, { prefix: '/api/fees' });
 
 // ── START ─────────────────────────────────────────────────────────────────────
 try {

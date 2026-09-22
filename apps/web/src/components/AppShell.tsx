@@ -15,6 +15,7 @@ const ADMIN_NAV: NavItem[] = [
   { route: 'students', label: 'Students' },
   { route: 'assignments', label: 'Teacher Assignments' },
   { route: 'attendance', label: 'Attendance' },
+  { route: 'fees', label: 'Fees' },
 ];
 
 const TEACHER_NAV: NavItem[] = [

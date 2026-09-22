@@ -243,3 +243,38 @@ export interface FeeSummary {
   partialCount: number;
   paidCount: number;
 }
+export interface CreateFeePaymentRequest {
+  studentFeeId: number;
+  amount: number;
+  paymentDate: string;
+  paymentMethod: FeePaymentMethod;
+  receiptNumber: string;
+  notes?: string;
+}
+
+export interface FeePayment {
+  id: number;
+  studentFeeId: number;
+  amount: number;
+  paymentDate: string;
+  paymentMethod: FeePaymentMethod;
+  receiptNumber: string;
+  receivedBy: number;
+  receivedByName: string;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface StudentFeeDetails {
+  fee: StudentFee;
+  payments: FeePayment[];
+}
+
+export interface FeeSummary {
+  totalDue: number;
+  totalPaid: number;
+  totalRemaining: number;
+  unpaidCount: number;
+  partialCount: number;
+  paidCount: number;
+}

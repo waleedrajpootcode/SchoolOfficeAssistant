@@ -7,10 +7,11 @@ import { StudentsPage } from './pages/StudentsPage.js';
 import { AssignmentsPage } from './pages/AssignmentsPage.js';
 import { MyClassesPage } from './pages/MyClassesPage.js';
 import { AttendancePage } from './pages/AttendancePage.js';
+import { FeesPage } from './pages/FeesPage.js';
 import { AppShell as Layout } from './components/AppShell.js';
 import { useRoute } from './router.js';
 
-function AppShellRoutes() {
+function AppShellRoutes({ isAdmin }: { isAdmin: boolean }) {
   const { route } = useRoute();
 
   switch (route) {
@@ -24,7 +25,9 @@ function AppShellRoutes() {
       return <MyClassesPage />;
     case 'attendance':
       return <AttendancePage />;
-    case 'dashboard':
+      case 'fees':
+  return isAdmin ? <FeesPage /> : <Dashboard />;
+      case 'dashboard':
     default:
       return <Dashboard />;
   }
@@ -45,7 +48,7 @@ function AuthenticatedApp() {
 
   return (
     <Layout>
-      <AppShellRoutes />
+      <AppShellRoutes isAdmin={user.role === 'admin'} />
     </Layout>
   );
 }
