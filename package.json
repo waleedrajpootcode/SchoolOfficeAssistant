@@ -1,0 +1,27 @@
+{
+  "name": "school-office-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline-first Windows School Office Assistant for small/private schools",
+  "workspaces": [
+    "apps/web",
+    "apps/server",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:server": "npm run build --workspace=apps/server",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "build": "npm run build:shared && npm run build:web && npm run build:server",
+    "type-check": "tsc --build --dry"
+  },
+  "engines": {
+    "node": ">=22.5.0",
+    "npm": ">=9.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

@@ -1,0 +1,61 @@
+# ─── Node.js ───────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+
+# ─── TypeScript ────────────────────────────────────────────
+*.tsbuildinfo
+dist/
+build/
+out/
+
+# ─── Vite ──────────────────────────────────────────────────
+.vite/
+apps/web/dist/
+
+# ─── SQLite ────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# ─── Environment & Secrets ────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# ─── VS Code ───────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ─── Windows ───────────────────────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# ─── Logs ──────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── OS ────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
