@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Resolve data/ relative to the project root.
 // __dirname is …/src/db (tsx) or …/dist/db (compiled) — both are 4 levels
 // below the repo root (server/src/db or server/dist/db → server → apps → root).
-const DB_PATH =
+export const DB_PATH =
   process.env.DB_PATH ??
   path.resolve(__dirname, '../../../../data/school.sqlite');
 

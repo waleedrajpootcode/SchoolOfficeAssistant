@@ -20,14 +20,14 @@ async function request<T>(
   body?: unknown
 ): Promise<ApiResult<T>> {
   const init: RequestInit = {
-    method,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-  };
+  method,
+  credentials: 'include',
+};
 
-  if (body !== undefined) {
-    init.body = JSON.stringify(body);
-  }
+if (body !== undefined) {
+  init.headers = { 'Content-Type': 'application/json' };
+  init.body = JSON.stringify(body);
+}
 
   try {
     const res = await fetch(`${BASE}${path}`, init);

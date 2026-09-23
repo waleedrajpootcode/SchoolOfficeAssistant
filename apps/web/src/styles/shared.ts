@@ -1,253 +1,349 @@
 import type { CSSProperties } from 'react';
 
 export const colors = {
-  primary: '#1a1a2e',
-  primarySoft: '#2c2c4a',
-  background: '#f0f2f5',
+  primary: '#172554',
+  primarySoft: '#1e3a8a',
+  accent: '#2563eb',
+  background: '#f5f7fb',
   card: '#ffffff',
-  border: '#dde1e6',
-  text: '#1a1a1a',
-  muted: '#6b7280',
-  danger: '#c0392b',
-  success: '#1e7e34',
-  warning: '#b7791f',
+  border: '#e2e8f0',
+  text: '#172033',
+  muted: '#64748b',
+  danger: '#dc2626',
+  success: '#15803d',
+  warning: '#b45309',
   info: '#2563eb',
+  surfaceSoft: '#f8fafc',
+  hover: '#f1f5f9',
 } as const;
 
 export const s: Record<string, CSSProperties> = {
   pageTitle: {
-    margin: '0 0 1rem',
-    fontSize: '1.4rem',
-    fontWeight: 700,
+    margin: '0 0 0.35rem',
+    fontSize: 'clamp(1.45rem, 2vw, 1.8rem)',
+    lineHeight: 1.2,
+    fontWeight: 750,
+    letterSpacing: '-0.025em',
     color: colors.text,
   },
+
   card: {
     background: colors.card,
-    borderRadius: 8,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 14,
     padding: '1.25rem',
-    boxShadow: '0 1px 6px rgba(0,0,0,0.08)',
+    boxShadow: '0 4px 18px rgba(15, 23, 42, 0.05)',
     marginBottom: '1rem',
   },
+
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.75rem',
+    gap: '0.85rem',
   },
+
   formTitle: {
     margin: '0 0 0.25rem',
     fontSize: '1.05rem',
-    fontWeight: 600,
+    fontWeight: 700,
     color: colors.text,
   },
+
   row: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '0.5rem',
+    gap: '0.65rem',
     alignItems: 'flex-end',
   },
+
   field: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 4,
+    gap: 6,
     minWidth: 0,
     flex: '1 1 auto',
   },
+
   label: {
-    fontSize: '0.8rem',
-    fontWeight: 600,
+    fontSize: '0.78rem',
+    fontWeight: 700,
     color: colors.muted,
+    letterSpacing: '0.01em',
   },
+
   input: {
-    padding: '0.5rem 0.7rem',
+    padding: '0.65rem 0.8rem',
     border: `1px solid ${colors.border}`,
-    borderRadius: 5,
-    fontSize: '0.95rem',
+    borderRadius: 8,
+    fontSize: '0.94rem',
     outline: 'none',
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     color: colors.text,
     minWidth: 0,
     width: '100%',
+    transition: 'border-color 150ms ease, box-shadow 150ms ease',
   },
+
   select: {
-    padding: '0.5rem 0.7rem',
+    padding: '0.65rem 0.8rem',
     border: `1px solid ${colors.border}`,
-    borderRadius: 5,
-    fontSize: '0.95rem',
+    borderRadius: 8,
+    fontSize: '0.94rem',
     outline: 'none',
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     color: colors.text,
     minWidth: 0,
     width: '100%',
+    cursor: 'pointer',
   },
+
   btn: {
-    padding: '0.5rem 1rem',
-    background: colors.primary,
+    padding: '0.62rem 1rem',
+    background: colors.accent,
     color: '#fff',
-    border: 'none',
-    borderRadius: 5,
-    fontSize: '0.92rem',
-    fontWeight: 600,
+    border: '1px solid transparent',
+    borderRadius: 8,
+    fontSize: '0.9rem',
+    fontWeight: 700,
     cursor: 'pointer',
     whiteSpace: 'nowrap',
+    boxShadow: '0 2px 6px rgba(37, 99, 235, 0.2)',
+    transition: 'transform 120ms ease, box-shadow 120ms ease, background 120ms ease',
   },
+
   btnSecondary: {
-    padding: '0.5rem 1rem',
-    background: 'transparent',
+    padding: '0.62rem 1rem',
+    background: colors.card,
     color: colors.primary,
-    border: `1px solid ${colors.primary}`,
-    borderRadius: 5,
-    fontSize: '0.92rem',
-    fontWeight: 600,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 8,
+    fontSize: '0.9rem',
+    fontWeight: 700,
     cursor: 'pointer',
     whiteSpace: 'nowrap',
+    transition: 'background 120ms ease, border-color 120ms ease',
   },
+
   btnDanger: {
-    padding: '0.5rem 1rem',
-    background: 'transparent',
+    padding: '0.62rem 1rem',
+    background: '#fff',
     color: colors.danger,
-    border: `1px solid ${colors.danger}`,
-    borderRadius: 5,
-    fontSize: '0.92rem',
-    fontWeight: 600,
+    border: `1px solid #fecaca`,
+    borderRadius: 8,
+    fontSize: '0.9rem',
+    fontWeight: 700,
     cursor: 'pointer',
     whiteSpace: 'nowrap',
+    transition: 'background 120ms ease, border-color 120ms ease',
   },
+
   btnSmall: {
-    padding: '0.3rem 0.6rem',
-    fontSize: '0.82rem',
-    borderRadius: 4,
+    padding: '0.35rem 0.65rem',
+    fontSize: '0.8rem',
+    borderRadius: 7,
   },
+
   tableWrap: {
     overflowX: 'auto',
     WebkitOverflowScrolling: 'touch',
+    border: `1px solid ${colors.border}`,
+    borderRadius: 12,
   },
+
   table: {
     width: '100%',
-    borderCollapse: 'collapse',
+    borderCollapse: 'separate',
+    borderSpacing: 0,
     background: colors.card,
-    borderRadius: 8,
-    fontSize: '0.92rem',
-    minWidth: 480,
+    fontSize: '0.9rem',
+    minWidth: 0,
   },
+
   th: {
     textAlign: 'left',
-    padding: '0.65rem 0.8rem',
-    borderBottom: `2px solid ${colors.border}`,
+    padding: '0.72rem 0.8rem',
+    borderBottom: `1px solid ${colors.border}`,
+    background: colors.surfaceSoft,
     color: colors.muted,
-    fontWeight: 600,
-    fontSize: '0.8rem',
+    fontWeight: 750,
+    fontSize: '0.74rem',
     textTransform: 'uppercase',
-    letterSpacing: '0.04em',
+    letterSpacing: '0.055em',
     whiteSpace: 'nowrap',
   },
+
   td: {
-    padding: '0.6rem 0.8rem',
+    padding: '0.72rem 0.8rem',
     borderBottom: `1px solid ${colors.border}`,
     verticalAlign: 'middle',
+    color: colors.text,
   },
+
   badge: {
-    display: 'inline-block',
-    padding: '0.15rem 0.6rem',
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '0.22rem 0.62rem',
     borderRadius: 999,
-    fontSize: '0.78rem',
-    fontWeight: 600,
+    fontSize: '0.74rem',
+    fontWeight: 750,
     whiteSpace: 'nowrap',
+    lineHeight: 1.2,
   },
+
   badgeGreen: {
-    background: '#e6f4ea',
+    background: '#ecfdf3',
     color: colors.success,
   },
+
   badgeRed: {
-    background: '#fdecea',
+    background: '#fef2f2',
     color: colors.danger,
   },
+
   badgeGrey: {
-    background: '#eef0f2',
+    background: '#f1f5f9',
     color: colors.muted,
   },
+
   badgeBlue: {
-    background: '#e8f0fe',
+    background: '#eff6ff',
     color: colors.info,
   },
+
   badgeAmber: {
-    background: '#fef3e2',
+    background: '#fffbeb',
     color: colors.warning,
   },
+
   errText: {
     color: colors.danger,
     fontSize: '0.875rem',
     margin: '0.5rem 0',
+    fontWeight: 500,
   },
+
   okText: {
     color: colors.success,
     fontSize: '0.875rem',
     margin: '0.5rem 0',
+    fontWeight: 500,
   },
+
   empty: {
     textAlign: 'center',
     color: colors.muted,
-    padding: '2rem 1rem',
+    padding: '2.5rem 1rem',
     fontSize: '0.92rem',
   },
+
   muted: {
     color: colors.muted,
     fontSize: '0.85rem',
   },
+
   spinner: {
     textAlign: 'center',
     color: colors.muted,
     padding: '1.5rem 0',
     fontSize: '0.92rem',
   },
+
   actions: {
     display: 'flex',
-    gap: '0.4rem',
+    gap: '0.45rem',
     flexWrap: 'wrap',
   },
+
   flex: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.75rem',
     flexWrap: 'wrap',
   },
+
   between: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    gap: '0.5rem',
-    marginBottom: '0.75rem',
+    gap: '0.65rem',
+    marginBottom: '0.85rem',
   },
+
   modal: {
     position: 'fixed',
     inset: 0,
-    background: 'rgba(0,0,0,0.4)',
+    background: 'rgba(15, 23, 42, 0.48)',
+    backdropFilter: 'blur(3px)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 100,
     padding: '1rem',
   },
+
   modalCard: {
     background: colors.card,
-    borderRadius: 8,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 16,
     padding: '1.5rem',
     width: '100%',
     maxWidth: 520,
     maxHeight: '90vh',
     overflowY: 'auto',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+    boxShadow: '0 20px 50px rgba(15, 23, 42, 0.18)',
   },
+
   modalTitle: {
     margin: '0 0 1rem',
-    fontSize: '1.1rem',
-    fontWeight: 700,
+    fontSize: '1.12rem',
+    fontWeight: 750,
     color: colors.text,
+    letterSpacing: '-0.015em',
   },
+
   modalActions: {
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '0.5rem',
-    marginTop: '1rem',
+    gap: '0.55rem',
+    marginTop: '1.1rem',
+  },
+    mobileCard: {
+    background: colors.card,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 12,
+    padding: '1rem',
+    boxShadow: '0 3px 12px rgba(15, 23, 42, 0.05)',
+    marginBottom: '0.8rem',
+    width: '100%',
+    maxWidth: '100%',
+    minWidth: 0,
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+  },
+
+  mobileCardTitle: {
+    margin: 0,
+    fontSize: '0.98rem',
+    fontWeight: 700,
+    color: colors.text,
+    overflowWrap: 'anywhere',
+  },
+
+  mobileCardText: {
+    margin: '0.25rem 0 0',
+    fontSize: '0.84rem',
+    color: colors.muted,
+    overflowWrap: 'anywhere',
+  },
+
+  mobileCardActions: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.45rem',
+    marginTop: '0.75rem',
+    width: '100%',
+    maxWidth: '100%',
   },
 };
+ 

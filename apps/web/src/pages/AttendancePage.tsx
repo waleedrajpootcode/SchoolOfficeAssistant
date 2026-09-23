@@ -165,6 +165,46 @@ export function AttendancePage() {
     setSaving(false);
   }
 
+  const mobileAttendanceStyles = `
+  @media (max-width: 700px) {
+    .attendance-table th,
+    .attendance-table td {
+      padding: 0.45rem 0.35rem;
+      font-size: 0.78rem;
+    }
+
+    .attendance-table th:nth-child(1),
+    .attendance-table td:nth-child(1) {
+      width: 18%;
+    }
+
+    .attendance-table th:nth-child(2),
+    .attendance-table td:nth-child(2) {
+      width: 32%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .attendance-table th:nth-child(3),
+    .attendance-table td:nth-child(3) {
+      width: 50%;
+    }
+
+    .attendance-status-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    .attendance-status-buttons button {
+      min-width: 58px;
+      min-height: 38px;
+      padding: 0.35rem 0.4rem;
+      font-size: 0.72rem;
+    }
+  }
+`;
+
   return (
     <div>
       <div style={s.between}>
@@ -221,8 +261,23 @@ export function AttendancePage() {
         </div>
       ) : (
         <>
-          <div style={s.tableWrap}>
-            <table style={s.table}>
+          <div
+  className="attendance-status-buttons"
+  style={{
+    display: 'flex',
+    gap: '0.4rem',
+    flexWrap: 'wrap',
+  }}
+>
+            <table
+  className="attendance-table"
+  style={{
+    ...s.table,
+    width: '100%',
+    minWidth: 0,
+    tableLayout: 'fixed',
+  }}
+>
               <thead>
                 <tr>
                   <th style={s.th}>Roll No</th>
@@ -238,13 +293,25 @@ export function AttendancePage() {
                       <td style={s.td}>{st.rollNumber}</td>
                       <td style={s.td}>{st.fullName}</td>
                       <td style={s.td}>
-                        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '0.35rem',
+                            flexWrap: 'wrap',
+                            maxWidth: '100%',
+                          }}
+                        >
                           {STATUS_OPTIONS.map(opt => (
                             <button
                               key={opt}
                               type="button"
                               onClick={() => onChangeStatus(st.id, opt)}
-                              style={statusStyle(status === opt)}
+                              style={{
+                                ...statusStyle(status === opt),
+                                minWidth: 70,
+                                minHeight: 40,
+                                touchAction: 'manipulation',
+                              }}
                               aria-pressed={status === opt}
                             >
                               {opt}
@@ -259,7 +326,14 @@ export function AttendancePage() {
             </table>
           </div>
 
-          <div style={{ ...s.flex, marginTop: '0.75rem' }}>
+          <div
+            style={{
+              ...s.flex,
+              marginTop: '0.75rem',
+              flexWrap: 'wrap',
+              width: '100%',
+            }}
+          >
             <button type="button" style={s.btn} onClick={handleSave} disabled={saving || dirtyCount === 0}>
               {saving ? 'Saving…' : (dirtyCount > 0 ? `Save Attendance (${dirtyCount} changed)` : 'Attendance up to date')}
             </button>

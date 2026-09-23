@@ -9,9 +9,18 @@ import type {
 } from '@school/shared';
 
 import { feesApi } from '../api/fees.js';
+import { api } from '../api/client.js';
 import { studentsApi } from '../api/students.js';
 import { classesApi } from '../api/classes.js';
 import { s, colors } from '../styles/shared.js';
+
+type SchoolSettings = {
+  schoolName: string;
+  schoolAddress: string | null;
+  phone: string | null;
+  email: string | null;
+  academicYear: string | null;
+};
 
 function formatAmount(amount: number): string {
   return `Rs. ${amount.toLocaleString()}`;
@@ -55,6 +64,8 @@ function today(): string {
 export function FeesPage() {
   const [structures, setStructures] = useState<FeeStructure[]>([]);
   const [studentFees, setStudentFees] = useState<StudentFee[]>([]);
+  const [schoolSettings, setSchoolSettings] =
+  useState<SchoolSettings | null>(null);
   const [summary, setSummary] = useState<FeeSummary | null>(null);
   const [students, setStudents] = useState<StudentSummary[]>([]);
   const [classes, setClasses] = useState<ClassSummary[]>([]);
@@ -143,6 +154,11 @@ export function FeesPage() {
     setSummary(summaryRes.data ?? null);
     setStudents(studentsRes.data ?? []);
     setClasses(classesRes.data ?? []);
+        const settingsRes = await api.get<SchoolSettings>('/settings');
+
+    if (settingsRes.success && settingsRes.data) {
+      setSchoolSettings(settingsRes.data);
+    }
     setLoading(false);
   }
 
@@ -323,7 +339,7 @@ export function FeesPage() {
     }));
   }
 
-  async function createPayment(event: React.FormEvent) {
+    async function createPayment(event: React.FormEvent) {
     event.preventDefault();
     setError('');
     setNotice('');
@@ -391,6 +407,268 @@ export function FeesPage() {
 
     await loadData();
     await loadPayments(selectedFee.id);
+  }
+
+    function printReceipt(payment: FeePayment) {
+    if (!selectedFee) {
+      setError('Select a student fee first.');
+      return;
+    }
+
+    const schoolName =
+      schoolSettings?.schoolName?.trim() || 'School Office';
+
+    const schoolAddress =
+      schoolSettings?.schoolAddress?.trim() || '';
+
+    const phone =
+      schoolSettings?.phone?.trim() || '';
+
+    const email =
+      schoolSettings?.email?.trim() || '';
+
+    const remainingBalance = selectedFee.amountRemaining;
+
+    const receiptWindow = window.open(
+      '',
+      '_blank',
+      'width=800,height=900'
+    );
+
+    if (!receiptWindow) {
+      setError(
+        'Unable to open receipt window. Please allow pop-ups for this site.'
+      );
+      return;
+    }
+
+    const escapeHtml = (value: string): string =>
+      value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    receiptWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8" />
+          <title>Fee Receipt - ${escapeHtml(
+            payment.receiptNumber
+          )}</title>
+
+          <style>
+            * {
+              box-sizing: border-box;
+            }
+
+            body {
+              margin: 0;
+              padding: 30px;
+              font-family: Arial, sans-serif;
+              color: #111827;
+              background: #ffffff;
+            }
+
+            .receipt {
+              max-width: 700px;
+              margin: 0 auto;
+              border: 1px solid #d1d5db;
+              padding: 32px;
+            }
+
+            .header {
+              text-align: center;
+              border-bottom: 2px solid #111827;
+              padding-bottom: 18px;
+              margin-bottom: 24px;
+            }
+
+            .school-name {
+              font-size: 25px;
+              font-weight: 700;
+              margin-bottom: 8px;
+            }
+
+            .school-info {
+              font-size: 13px;
+              color: #4b5563;
+              line-height: 1.6;
+            }
+
+            .title {
+              text-align: center;
+              font-size: 20px;
+              font-weight: 700;
+              margin-bottom: 24px;
+              text-transform: uppercase;
+            }
+
+            .row {
+              display: flex;
+              justify-content: space-between;
+              gap: 24px;
+              padding: 10px 0;
+              border-bottom: 1px solid #e5e7eb;
+            }
+
+            .label {
+              font-weight: 600;
+              color: #4b5563;
+            }
+
+            .value {
+              text-align: right;
+              font-weight: 500;
+            }
+
+            .amount {
+              font-size: 22px;
+              font-weight: 700;
+            }
+
+            .footer {
+              margin-top: 30px;
+              padding-top: 18px;
+              border-top: 1px solid #d1d5db;
+              font-size: 12px;
+              color: #6b7280;
+              text-align: center;
+            }
+
+            @media print {
+              body {
+                padding: 0;
+              }
+
+              .receipt {
+                border: none;
+                max-width: none;
+              }
+            }
+          </style>
+        </head>
+
+        <body>
+          <div class="receipt">
+
+            <div class="header">
+              <div class="school-name">
+                ${escapeHtml(schoolName)}
+              </div>
+
+              <div class="school-info">
+                ${schoolAddress
+                  ? `${escapeHtml(schoolAddress)}<br />`
+                  : ''}
+                ${phone
+                  ? `Phone: ${escapeHtml(phone)}<br />`
+                  : ''}
+                ${email
+                  ? `Email: ${escapeHtml(email)}`
+                  : ''}
+              </div>
+            </div>
+
+            <div class="title">
+              Fee Payment Receipt
+            </div>
+
+            <div class="row">
+              <span class="label">Receipt Number</span>
+              <span class="value">
+                ${escapeHtml(payment.receiptNumber)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Student Name</span>
+              <span class="value">
+                ${escapeHtml(selectedFee.studentName)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Roll Number</span>
+              <span class="value">
+                ${escapeHtml(selectedFee.rollNumber)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Fee Period</span>
+              <span class="value">
+                ${escapeHtml(selectedFee.feePeriod)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Payment Date</span>
+              <span class="value">
+                ${escapeHtml(payment.paymentDate)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Payment Method</span>
+              <span class="value">
+                ${escapeHtml(payment.paymentMethod)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Amount Paid</span>
+              <span class="value amount">
+                ${formatAmount(payment.amount)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Current Remaining Balance</span>
+              <span class="value">
+                ${formatAmount(remainingBalance)}
+              </span>
+            </div>
+
+            <div class="row">
+              <span class="label">Received By</span>
+              <span class="value">
+                ${escapeHtml(payment.receivedByName)}
+              </span>
+            </div>
+
+            ${
+              payment.notes
+                ? `
+                  <div class="row">
+                    <span class="label">Notes</span>
+                    <span class="value">
+                      ${escapeHtml(payment.notes)}
+                    </span>
+                  </div>
+                `
+                : ''
+            }
+
+            <div class="footer">
+              Thank you. This is a computer-generated fee receipt.
+            </div>
+
+          </div>
+        </body>
+      </html>
+    `);
+
+    receiptWindow.document.close();
+    receiptWindow.focus();
+
+    receiptWindow.onafterprint = () => {
+      receiptWindow.close();
+    };
+
+    receiptWindow.print();
   }
 
   return (
@@ -1196,74 +1474,84 @@ export function FeesPage() {
                   </p>
                 )}
 
-                <div
+<div
+  style={{
+    marginTop: '1.25rem',
+  }}
+>
+  <h3
+    style={{
+      ...s.formTitle,
+      marginBottom: '0.6rem',
+    }}
+  >
+    Payment History
+  </h3>
+
+  {paymentsLoading ? (
+    <p style={s.spinner}>
+      Loading payment history...
+    </p>
+  ) : payments.length === 0 ? (
+    <div style={s.empty}>
+      No payments recorded yet.
+    </div>
+  ) : (
+    <div style={s.tableWrap}>
+      <table style={s.table}>
+        <thead>
+          <tr>
+            <th style={s.th}>Date</th>
+            <th style={s.th}>Amount</th>
+            <th style={s.th}>Method</th>
+            <th style={s.th}>Receipt</th>
+            <th style={s.th}>Received By</th>
+            <th style={s.th}>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {payments.map((payment) => (
+            <tr key={payment.id}>
+              <td style={s.td}>
+                {payment.paymentDate}
+              </td>
+
+              <td style={s.td}>
+                {formatAmount(payment.amount)}
+              </td>
+
+              <td style={s.td}>
+                {payment.paymentMethod}
+              </td>
+
+              <td style={s.td}>
+                {payment.receiptNumber}
+              </td>
+
+              <td style={s.td}>
+                {payment.receivedByName}
+              </td>
+
+              <td style={s.td}>
+                <button
+                  type="button"
                   style={{
-                    marginTop: '1.25rem',
+                    ...s.btnSecondary,
+                    ...s.btnSmall,
                   }}
+                  onClick={() => printReceipt(payment)}
                 >
-                  <h3
-                    style={{
-                      ...s.formTitle,
-                      marginBottom: '0.6rem',
-                    }}
-                  >
-                    Payment History
-                  </h3>
-
-                  {paymentsLoading ? (
-                    <p style={s.spinner}>
-                      Loading payment history...
-                    </p>
-                  ) : payments.length === 0 ? (
-                    <div style={s.empty}>
-                      No payments recorded yet.
-                    </div>
-                  ) : (
-                    <div style={s.tableWrap}>
-                      <table style={s.table}>
-                        <thead>
-                          <tr>
-                            <th style={s.th}>Date</th>
-                            <th style={s.th}>Amount</th>
-                            <th style={s.th}>Method</th>
-                            <th style={s.th}>Receipt</th>
-                            <th style={s.th}>
-                              Received By
-                            </th>
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          {payments.map((payment) => (
-                            <tr key={payment.id}>
-                              <td style={s.td}>
-                                {payment.paymentDate}
-                              </td>
-
-                              <td style={s.td}>
-                                {formatAmount(
-                                  payment.amount
-                                )}
-                              </td>
-
-                              <td style={s.td}>
-                                {payment.paymentMethod}
-                              </td>
-
-                              <td style={s.td}>
-                                {payment.receiptNumber}
-                              </td>
-
-                              <td style={s.td}>
-                                {payment.receivedByName}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
+                  Print Receipt
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
               </section>
             )}
           </>

@@ -18,12 +18,15 @@ import { getDatabase } from './database.js';
 import * as migration001 from './migrations/001_auth_schema.js';
 import * as migration002 from './migrations/002_classes_students_attendance.js';
 import * as migration003 from './migrations/003_fees.js';
+import * as migration004 from './migrations/004_school_settings.js';
+
 
 /** All migrations in execution order. Add new entries here as the project grows. */
 const MIGRATIONS = [
   migration001,
   migration002,
   migration003,
+  migration004
 ] as const;
 
 type Migration = {

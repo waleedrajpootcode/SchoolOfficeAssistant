@@ -1,0 +1,1 @@
+{"version":3,"file":"001_auth_schema.d.ts","sourceRoot":"","sources":["../../../src/db/migrations/001_auth_schema.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;GAcG;AAEH,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,aAAa,CAAC;AAGhD,eAAO,MAAM,EAAE,oBAAoB,CAAC;AAEpC,wBAAgB,EAAE,CAAC,EAAE,EAAE,YAAY,GAAG,IAAI,CAgFzC"}

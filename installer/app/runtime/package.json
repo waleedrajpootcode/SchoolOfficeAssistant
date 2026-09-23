@@ -1,0 +1,11 @@
+﻿{
+  "name": "school-office-assistant-runtime",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/cors": "^11.3.0",
+    "@fastify/static": "^10.1.4",
+    "fastify": "^5.12.5"
+  }
+}

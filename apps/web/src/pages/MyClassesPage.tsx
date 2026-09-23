@@ -31,12 +31,31 @@ export function MyClassesPage() {
           No classes assigned to you yet. An administrator needs to assign you a class.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
+            gap: '0.85rem',
+            width: '100%',
+            maxWidth: '100%',
+            minWidth: 0,
+          }}
+        >
           {classes.map(c => (
             <button
               key={c.id}
               type="button"
-              style={{ ...s.card, textAlign: 'left', cursor: 'pointer' }}
+              style={{
+                ...s.card,
+                textAlign: 'left',
+                cursor: 'pointer',
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: 0,
+                boxSizing: 'border-box',
+                marginBottom: 0,
+                overflow: 'hidden',
+              }}
               onClick={() => navigate('attendance', { classId: c.id })}
             >
               <h3 style={{ margin: '0 0 0.35rem', fontSize: '1.05rem', color: '#1a1a1a' }}>{c.name}</h3>

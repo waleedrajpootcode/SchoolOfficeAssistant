@@ -1,0 +1,1 @@
+{"version":3,"file":"003_fees.d.ts","sourceRoot":"","sources":["../../../src/db/migrations/003_fees.ts"],"names":[],"mappings":"AAAA;;;;;;;;;GASG;AAEH,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,aAAa,CAAC;AAEhD,eAAO,MAAM,EAAE,aAAa,CAAC;AAE7B,wBAAgB,EAAE,CAAC,EAAE,EAAE,YAAY,GAAG,IAAI,CAuEzC"}
