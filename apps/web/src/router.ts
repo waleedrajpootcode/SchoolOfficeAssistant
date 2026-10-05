@@ -4,12 +4,15 @@ export type RouteName =
   | 'dashboard'
   | 'classes'
   | 'students'
+  | 'families'
   | 'teachers'
   | 'assignments'
   | 'my-classes'
   | 'attendance'
   | 'reports'
   | 'fees'
+  | 'fee-settings'
+  | 'salaries'
   | 'settings'
   | 'backup';
 
@@ -32,8 +35,8 @@ export function parseHash(): { route: RouteName | ''; params: URLSearchParams } 
   const [path, query] = raw.split('?');
   const clean = path.replace(/\/+$/, '');
   const known: RouteName[] = [
-    'dashboard', 'classes', 'students', 'teachers', 'assignments', 'my-classes',
-    'attendance', 'reports', 'fees', 'settings', 'backup',
+    'dashboard', 'classes', 'students', 'families', 'teachers', 'assignments', 'my-classes',
+    'attendance', 'reports', 'fees', 'fee-settings', 'salaries', 'settings', 'backup',
   ];
   const route = (known.includes(clean as RouteName) ? clean : '') as RouteName | '';
   return { route, params: new URLSearchParams(query ?? '') };

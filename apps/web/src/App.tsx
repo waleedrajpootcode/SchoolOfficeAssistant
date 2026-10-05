@@ -4,12 +4,15 @@ import { LoginPage } from './pages/LoginPage.js';
 import { Dashboard } from './pages/Dashboard.js';
 import { ClassesPage } from './pages/ClassesPage.js';
 import { StudentsPage } from './pages/StudentsPage.js';
+import { FamiliesPage } from './pages/FamiliesPage.js';
 import { TeachersPage } from './pages/TeachersPage.js';
 import { AssignmentsPage } from './pages/AssignmentsPage.js';
 import { MyClassesPage } from './pages/MyClassesPage.js';
 import { AttendancePage } from './pages/AttendancePage.js';
 import { FeesPage } from './pages/FeesPage.js';
+import { SalariesPage } from './pages/SalariesPage.js';
 import { AppShell as Layout } from './components/AppShell.js';
+import FeeSettingsPage from './pages/FeeSettingsPage.js';
 import { navigate, useRoute } from './router.js';
 import { api } from './api/client.js';
 import { SettingsPage } from './pages/SettingsPage.js';
@@ -64,6 +67,8 @@ function AppShellRoutes({ isAdmin }: { isAdmin: boolean }) {
       return <ClassesPage />;
     case 'students':
       return <StudentsPage />;
+    case 'families':
+      return isAdmin ? <FamiliesPage /> : <Dashboard />;
     case 'teachers':
       return isAdmin ? <TeachersPage /> : <Dashboard />;
     case 'assignments':
@@ -72,8 +77,13 @@ function AppShellRoutes({ isAdmin }: { isAdmin: boolean }) {
       return <MyClassesPage />;
     case 'attendance':
       return <AttendancePage />;
+    case 'fee-settings':
+      return <FeeSettingsPage />;
+
     case 'fees':
       return isAdmin ? <FeesPage /> : <Dashboard />;
+    case 'salaries':
+      return isAdmin ? <SalariesPage /> : <Dashboard />;
     case 'settings':
       return isAdmin ? <SettingsPage /> : <Dashboard />;
     case 'dashboard':
@@ -88,7 +98,7 @@ function AuthenticatedApp() {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <p style={{ color: '#888', fontSize: '1rem' }}>Loading…</p>
+        <p style={{ color: '#888', fontSize: '1rem' }}>Loadingâ€¦</p>
       </div>
     );
   }
@@ -113,3 +123,4 @@ export default function App() {
     </AuthProvider>
   );
 }
+

@@ -22,14 +22,20 @@ const STATUS_OPTIONS: AttendanceStatus[] = ['present', 'absent', 'leave'];
 
 function statusStyle(active: boolean): CSSProperties {
   const base: CSSProperties = {
-    padding: '0.35rem 0.65rem',
-    borderRadius: 5,
+    padding: '0.4rem 0.7rem',
+    borderRadius: 9,
     fontSize: '0.8rem',
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
-    border: '1px solid #cbd5e1',
-    background: active ? '#1a1a2e' : '#fff',
+    border: active ? '1px solid rgba(18,59,93,0.18)' : '1px solid #d9e2ec',
+    background: active
+      ? 'linear-gradient(135deg, #123B5D 0%, #1677C8 100%)'
+      : 'linear-gradient(135deg, #ffffff 0%, #f8fbff 100%)',
     color: active ? '#fff' : '#334155',
+    boxShadow: active
+      ? '0 5px 12px rgba(18,59,93,0.18)'
+      : '0 2px 7px rgba(15,23,42,0.05)',
+    transition: 'transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease',
   };
   return base;
 }
@@ -206,7 +212,30 @@ export function AttendancePage() {
 `;
 
   return (
-    <div>
+    <div style={{ animation: 'soaAttendancePageIn 240ms ease-out' }}>
+      <style>{`
+        @keyframes soaAttendancePageIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .soa-attendance-select:focus,
+        .soa-attendance-date:focus {
+          outline: none;
+          border-color: #1677C8 !important;
+          box-shadow: 0 0 0 3px rgba(22,119,200,0.12) !important;
+        }
+
+        .attendance-status-buttons button:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+
+        .attendance-status-buttons button:focus-visible {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(22,119,200,0.14);
+        }
+      `}</style>
+
       <div style={s.between}>
         <div>
           <h1 style={s.pageTitle}>Attendance</h1>
@@ -216,16 +245,48 @@ export function AttendancePage() {
               : 'View and record attendance for any class.'}
           </p>
         </div>
-        {isTeacher && <button type="button" style={s.btnSecondary} onClick={() => navigate('my-classes')}>My Classes</button>}
+        {isTeacher && (
+          <button
+            type="button"
+            style={{
+              ...s.btnSecondary,
+              borderRadius: 9,
+              fontWeight: 700,
+              boxShadow: '0 4px 12px rgba(15,23,42,0.06)',
+              transition: 'transform 160ms ease, box-shadow 160ms ease',
+            }}
+            onClick={() => navigate('my-classes')}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 6px 14px rgba(15,23,42,0.10)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = '';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(15,23,42,0.06)';
+            }}
+          >
+            My Classes
+          </button>
+        )}
       </div>
 
       <SyncBanner onSynced={() => undefined} />
 
       {/* ── Selectors ── */}
-      <div style={{ ...s.card, ...s.row }}>
+      <div
+        style={{
+          ...s.card,
+          ...s.row,
+          marginTop: 14,
+          borderRadius: 16,
+          border: `1px solid ${s.border}`,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fbff 100%)',
+          boxShadow: '0 10px 28px rgba(18,59,93,0.07)',
+        }}
+      >
         <div style={{ ...s.field, flex: '2 1 220px' }}>
           <label style={s.label} htmlFor="attClass">Class</label>
-          <select id="attClass" style={s.select} value={classId}
+          <select id="attClass" style={s.select} className="soa-attendance-select" value={classId}
             onChange={e => setClassId(e.target.value === '' ? '' : Number(e.target.value))} disabled={loadingMeta}>
             <option value="">{loadingMeta ? 'Loading classes…' : 'Select class…'}</option>
             {classes.map(c => (
@@ -235,7 +296,7 @@ export function AttendancePage() {
         </div>
         <div style={{ ...s.field, flex: '1 1 160px' }}>
           <label style={s.label} htmlFor="attDate">Date</label>
-          <input id="attDate" type="date" style={s.input} value={date}
+          <input id="attDate" type="date" style={s.input} className="soa-attendance-date" value={date}
             max={todayLocalYYYYMMDD()}
             onChange={e => e.target.value && setDate(e.target.value)} />
         </div>

@@ -32,7 +32,6 @@ Name: "{commonappdata}\SchoolOfficeAssistant\data"; Permissions: users-modify
 [Files]
 Source: "..\node\*"; DestDir: "{app}\node"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\app\*"; DestDir: "{app}\app"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\web\*"; DestDir: "{app}\web"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\SchoolOfficeAssistant.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\assets\SchoolOfficeAssistant.ico"; DestDir: "{app}"; Flags: ignoreversion
 

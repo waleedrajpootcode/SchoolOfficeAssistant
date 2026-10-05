@@ -1,0 +1,1 @@
+{"version":3,"file":"005_fee_due_dates.js","sourceRoot":"","sources":["../../../src/db/migrations/005_fee_due_dates.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,MAAM,EAAE,GAAG,mBAAmB,CAAC;AAEtC,MAAM,UAAU,EAAE,CAAC,EAAgB;IACjC,EAAE,CAAC,IAAI,CAAC;;;GAGP,CAAC,CAAC;IAEH,EAAE,CAAC,IAAI,CAAC;;;GAGP,CAAC,CAAC;AACL,CAAC"}

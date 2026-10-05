@@ -1,0 +1,1 @@
+{"version":3,"file":"010_student_fee_assignments.d.ts","sourceRoot":"","sources":["../../../src/db/migrations/010_student_fee_assignments.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,aAAa,CAAC;AAEhD,eAAO,MAAM,EAAE,gCAAgC,CAAC;AAEhD,wBAAgB,EAAE,CAAC,EAAE,EAAE,YAAY,GAAG,IAAI,CA0BzC"}

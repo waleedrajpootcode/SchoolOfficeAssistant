@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   FeeStructure,
   CreateFeeStructureRequest,
   StudentFee,
@@ -11,18 +11,25 @@ import type {
 import { api } from './client.js';
 
 export const feesApi = {
-  // ── Fee summary ───────────────────────────────────────────────────────────
-  getSummary: () =>
-    api.get<FeeSummary>('/fees/summary'),
+  // â”€â”€ Fee summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  getSummary: (period?: string) => {
+    const query = period
+      ? `?period=${encodeURIComponent(period)}`
+      : '';
 
-  // ── Fee structures ────────────────────────────────────────────────────────
+    return api.get<FeeSummary>(
+      `/fees/summary${query}`
+    );
+  },
+
+  // â”€â”€ Fee structures â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   listStructures: () =>
     api.get<FeeStructure[]>('/fees/structures'),
 
   createStructure: (body: CreateFeeStructureRequest) =>
     api.post<FeeStructure>('/fees/structures', body),
 
-  // ── Student fees ─────────────────────────────────────────────────────────
+  // â”€â”€ Student fees â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   listStudentFees: (params?: {
     studentId?: number;
     period?: string;
@@ -49,13 +56,62 @@ export const feesApi = {
     );
   },
 
+  listStudentFeePeriods: () =>
+    api.get<string[]>('/fees/student-fee-periods'),
+
   createStudentFee: (body: CreateStudentFeeRequest) =>
     api.post<StudentFee>('/fees/student-fees', body),
 
-  // ── Payments ─────────────────────────────────────────────────────────────
+  // â”€â”€ Payments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   createPayment: (body: CreateFeePaymentRequest) =>
     api.post<FeePayment>('/fees/payments', body),
+
+  getStudentOutstanding: (studentId: number) =>
+    api.get<{
+      studentId: number;
+      studentName: string;
+      rollNumber: string;
+      guardianName: string;
+      totalOutstanding: number;
+      fees: Array<{
+        studentFeeId: number;
+        feePeriod: string;
+        amountDue: number;
+        amountPaid: number;
+        fineAmount: number;
+        fineWaivedAmount: number;
+        effectiveFine: number;
+        totalPayable: number;
+        remaining: number;
+        dueDate: string | null;
+      }>;
+    }>(`/fees/students/${studentId}/outstanding`),
+
+  createStudentPayment: (body: {
+    studentId: number;
+    amount: number;
+    paymentDate: string;
+    paymentMethod: FeePayment['paymentMethod'];
+    notes?: string | null;
+  }) =>
+    api.post<{
+      studentId: number;
+      studentName: string;
+      receiptNumber: string;
+      totalAmount: number;
+      paymentDate: string;
+      paymentMethod: FeePayment['paymentMethod'];
+      allocations: Array<{
+        paymentId: number;
+        studentFeeId: number;
+        feePeriod: string;
+        amount: number;
+      }>;
+    }>('/fees/student-payments', body),
 
   listPayments: (studentFeeId: number) =>
     api.get<FeePayment[]>(`/fees/student-fees/${studentFeeId}/payments`),
 };
+
+
+

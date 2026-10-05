@@ -63,12 +63,22 @@ export async function studentRoutes(fastify) {
                     guardianName: { type: 'string', minLength: 1, maxLength: 150 },
                     guardianPhone: { type: 'string', maxLength: 30 },
                     classId: { type: 'integer', minimum: 1 },
+                    familyId: { type: 'integer', minimum: 1 },
                 },
             },
         },
     }, async (request, reply) => {
-        const { rollNumber, fullName, guardianName, guardianPhone, classId } = request.body;
+        const { rollNumber, fullName, guardianName, guardianPhone, classId, familyId } = request.body;
         const db = getDatabase();
+        // Validate family when supplied
+        if (familyId !== undefined) {
+            const family = db
+                .prepare('SELECT id FROM families WHERE id = ? AND is_active = 1')
+                .get(familyId);
+            if (!family) {
+                return reply.code(400).send({ success: false, error: 'Family not found or inactive' });
+            }
+        }
         // Validate class exists
         const cls = db.prepare('SELECT id FROM classes WHERE id = ? AND is_active = 1').get(classId);
         if (!cls) {
@@ -79,8 +89,8 @@ export async function studentRoutes(fastify) {
         if (dup) {
             return reply.code(409).send({ success: false, error: 'Roll number already exists' });
         }
-        const result = db.prepare(`INSERT INTO students (roll_number, full_name, guardian_name, guardian_phone, class_id)
-         VALUES (?, ?, ?, ?, ?)`).run(rollNumber, fullName, guardianName, guardianPhone ?? null, classId);
+        const result = db.prepare(`INSERT INTO students (roll_number, full_name, guardian_name, guardian_phone, class_id, family_id)
+         VALUES (?, ?, ?, ?, ?, ?)`).run(rollNumber, fullName, guardianName, guardianPhone ?? null, classId, familyId ?? null);
         const newRow = db.prepare(`SELECT s.id, s.roll_number, s.full_name, s.guardian_name, s.guardian_phone,
                 s.class_id, c.name AS class_name, s.is_active, s.created_at, s.updated_at
          FROM students s JOIN classes c ON c.id = s.class_id WHERE s.id = ?`).get(result.lastInsertRowid);

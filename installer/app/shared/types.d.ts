@@ -145,6 +145,30 @@ export interface CreateFeeStructureRequest {
     feeName: string;
     amount: number;
 }
+export interface FeeRule {
+    id: number;
+    feeStructureId: number;
+    feeName: string;
+    className: string;
+    lastDateDay: number | null;
+    fineStartDay: number | null;
+    fineAmount: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface CreateFeeRuleRequest {
+    feeStructureId: number;
+    lastDateDay?: number;
+    fineStartDay?: number;
+    fineAmount?: number;
+}
+export interface UpdateFeeRuleRequest {
+    lastDateDay?: number | null;
+    fineStartDay?: number | null;
+    fineAmount?: number;
+    isActive?: boolean;
+}
 export interface StudentFee {
     id: number;
     studentId: number;
@@ -156,15 +180,62 @@ export interface StudentFee {
     amountPaid: number;
     amountRemaining: number;
     status: StudentFeeStatus;
+    effectiveStatus: StudentFeeStatus | 'overdue';
+    dueDate: string | null;
+    fineStartDate: string | null;
+    fineAmount: number;
+    fineApplicable: boolean;
+    appliedFine: number;
+    totalPayable: number;
+    totalRemaining: number;
+    daysOverdue: number;
     notes: string | null;
     createdAt: string;
     updatedAt: string;
 }
 export interface CreateStudentFeeRequest {
     studentId: number;
-    feeStructureId?: number;
+    feeStructureId: number;
     feePeriod: string;
-    amountDue: number;
+    notes?: string;
+}
+export interface FeePayment {
+    id: number;
+    studentFeeId: number;
+    amount: number;
+    paymentDate: string;
+    paymentMethod: FeePaymentMethod;
+    receivedBy: number;
+    receivedByName: string;
+    notes: string | null;
+    createdAt: string;
+}
+export interface CreateFeePaymentRequest {
+    studentFeeId: number;
+    amount: number;
+    paymentDate: string;
+    paymentMethod: FeePaymentMethod;
+    notes?: string;
+}
+export interface StudentFeeDetails {
+    fee: StudentFee;
+    payments: FeePayment[];
+}
+export interface FeeSummary {
+    totalDue: number;
+    totalPaid: number;
+    totalRemaining: number;
+    unpaidCount: number;
+    partialCount: number;
+    paidCount: number;
+    overdueCount: number;
+    overdueAmount: number;
+}
+export interface CreateFeePaymentRequest {
+    studentFeeId: number;
+    amount: number;
+    paymentDate: string;
+    paymentMethod: FeePaymentMethod;
     notes?: string;
 }
 export interface FeePayment {
@@ -179,14 +250,6 @@ export interface FeePayment {
     notes: string | null;
     createdAt: string;
 }
-export interface CreateFeePaymentRequest {
-    studentFeeId: number;
-    amount: number;
-    paymentDate: string;
-    paymentMethod: FeePaymentMethod;
-    receiptNumber: string;
-    notes?: string;
-}
 export interface StudentFeeDetails {
     fee: StudentFee;
     payments: FeePayment[];
@@ -199,36 +262,60 @@ export interface FeeSummary {
     partialCount: number;
     paidCount: number;
 }
-export interface CreateFeePaymentRequest {
-    studentFeeId: number;
-    amount: number;
-    paymentDate: string;
-    paymentMethod: FeePaymentMethod;
-    receiptNumber: string;
-    notes?: string;
-}
-export interface FeePayment {
+export type TeacherSalaryStatus = 'pending' | 'partial' | 'paid';
+export interface TeacherSalary {
     id: number;
-    studentFeeId: number;
-    amount: number;
-    paymentDate: string;
-    paymentMethod: FeePaymentMethod;
-    receiptNumber: string;
-    receivedBy: number;
-    receivedByName: string;
+    teacherId: number;
+    teacherName: string;
+    username: string;
+    salaryPeriod: string;
+    salaryDue: number;
+    salaryPaid: number;
+    salaryRemaining: number;
+    status: TeacherSalaryStatus;
+    paymentDate: string | null;
+    paymentMethod: 'cash' | 'bank' | 'online' | 'other';
     notes: string | null;
     createdAt: string;
+    updatedAt: string;
 }
-export interface StudentFeeDetails {
-    fee: StudentFee;
-    payments: FeePayment[];
+export interface CreateTeacherSalaryRequest {
+    teacherId: number;
+    salaryPeriod: string;
+    salaryDue: number;
+    notes?: string;
 }
-export interface FeeSummary {
-    totalDue: number;
-    totalPaid: number;
-    totalRemaining: number;
-    unpaidCount: number;
-    partialCount: number;
-    paidCount: number;
+export interface UpdateTeacherSalaryRequest {
+    salaryPaid: number;
+    paymentDate?: string;
+    paymentMethod?: 'cash' | 'bank' | 'online' | 'other';
+    notes?: string;
+}
+export interface TeacherProfile {
+    teacherId: number;
+    phone: string | null;
+    email: string | null;
+    subject: string | null;
+    joiningDate: string | null;
+    monthlySalary: number;
+    notes: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface CreateTeacherProfileRequest {
+    phone?: string;
+    email?: string;
+    subject?: string;
+    joiningDate?: string;
+    monthlySalary?: number;
+    notes?: string;
+}
+export interface UpdateTeacherProfileRequest {
+    phone?: string;
+    email?: string;
+    subject?: string;
+    joiningDate?: string;
+    monthlySalary?: number;
+    notes?: string;
 }
 //# sourceMappingURL=types.d.ts.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"009_fee_rules.js","sourceRoot":"","sources":["../../../src/db/migrations/009_fee_rules.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,MAAM,EAAE,GAAG,eAAe,CAAC;AAElC,MAAM,UAAU,EAAE,CAAC,EAAgB;IACjC,EAAE,CAAC,IAAI,CAAC;;;;;;;;;;;;;;;;;;;;;;;;;GAyBP,CAAC,CAAC;IAEH,EAAE,CAAC,IAAI,CAAC;;;GAGP,CAAC,CAAC;IAEH,EAAE,CAAC,IAAI,CAAC;;;GAGP,CAAC,CAAC;AACL,CAAC"}

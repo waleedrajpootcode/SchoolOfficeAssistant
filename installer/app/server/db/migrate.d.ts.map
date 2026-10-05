@@ -1,1 +1,1 @@
-{"version":3,"file":"migrate.d.ts","sourceRoot":"","sources":["../../src/db/migrate.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;GAcG;AAsBH;;;GAGG;AACH,wBAAgB,aAAa,IAAI,IAAI,CAkCpC"}
+{"version":3,"file":"migrate.d.ts","sourceRoot":"","sources":["../../src/db/migrate.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;GAcG;AAwCH;;;GAGG;AACH,wBAAgB,aAAa,IAAI,IAAI,CAkCpC"}

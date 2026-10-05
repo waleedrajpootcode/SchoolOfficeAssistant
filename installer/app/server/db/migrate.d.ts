@@ -8,7 +8,7 @@
  *   4. Runs each pending migration inside a manual transaction (atomic).
  *   5. Records the completed migration id + timestamp.
  *
- * Safe to call on every server startup — idempotent by design.
+ * Safe to call on every server startup â€” idempotent by design.
  *
  * Note: node:sqlite's DatabaseSync does not expose a .transaction() helper;
  * we use raw BEGIN / COMMIT / ROLLBACK instead.

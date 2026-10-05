@@ -1,1 +1,1 @@
-{"version":3,"file":"fees.d.ts","sourceRoot":"","sources":["../../src/routes/fees.ts"],"names":[],"mappings":"AAAA;;;;;;;;GAQG;AAEH,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AAgH/C,wBAAsB,SAAS,CAAC,OAAO,EAAE,eAAe,iBAikBvD"}
+{"version":3,"file":"fees.d.ts","sourceRoot":"","sources":["../../src/routes/fees.ts"],"names":[],"mappings":"AAAA;;;;;;;;GAQG;AAEH,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AA0V/C,wBAAsB,SAAS,CAAC,OAAO,EAAE,eAAe,iBA4kDvD"}

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import type { CSSProperties } from 'react';
+import React from 'react';
 import { useAuth } from '../context/AuthContext.js';
 import { navigate, useRoute, type RouteName } from '../router.js';
 import { api } from '../api/client.js';
@@ -14,10 +13,13 @@ const ADMIN_NAV: NavItem[] = [
   { route: 'dashboard', label: 'Dashboard' },
   { route: 'classes', label: 'Classes' },
   { route: 'students', label: 'Students' },
+  { route: 'families', label: 'Families' },
   { route: 'teachers', label: 'Teachers' },
   { route: 'assignments', label: 'Assignments' },
   { route: 'attendance', label: 'Attendance' },
   { route: 'fees', label: 'Fees' },
+  { route: 'salaries', label: 'Salaries' },
+  { route: 'fee-settings', label: 'Fee Settings' },
   { route: 'settings', label: 'Settings' },
 ];
 
@@ -27,607 +29,353 @@ const TEACHER_NAV: NavItem[] = [
   { route: 'attendance', label: 'Attendance' },
 ];
 
+const SIDEBAR_WIDTH = 268;
+
+const styles: Record<string, React.CSSProperties> = {
+  shell: {
+    minHeight: '100vh',
+    background: colors.background,
+    color: colors.text,
+  },
+  sidebar: {
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: SIDEBAR_WIDTH,
+    boxSizing: 'border-box',
+    background:
+      'linear-gradient(180deg, #f8fbff 0%, #eef6ff 48%, #ffffff 100%)',
+    borderRight: `1px solid ${colors.border}`,
+    display: 'flex',
+    flexDirection: 'column',
+    zIndex: 100,
+    overflowY: 'auto',
+    boxShadow: '10px 0 34px rgba(18, 59, 93, 0.08)',
+  },
+  brand: {
+    padding: '22px 18px 18px',
+    borderBottom: `1px solid ${colors.border}`,
+    background:
+      'linear-gradient(135deg, rgba(18, 59, 93, 0.075) 0%, rgba(22, 119, 200, 0.085) 58%, rgba(99, 102, 241, 0.055) 100%)',
+  },
+  logo: {
+    width: 44,
+    height: 44,
+    borderRadius: 13,
+    background:
+      'linear-gradient(135deg, #123B5D 0%, #1677C8 58%, #38BDF8 100%)',
+    color: '#fff',
+    display: 'grid',
+    placeItems: 'center',
+    fontWeight: 900,
+    fontSize: 15,
+    letterSpacing: 0.5,
+    marginBottom: 12,
+    boxShadow: '0 10px 22px rgba(22, 119, 200, 0.25)',
+  },
+  schoolName: {
+    fontSize: 16,
+    fontWeight: 800,
+    color: colors.text,
+    lineHeight: 1.25,
+  },
+  productName: {
+    marginTop: 4,
+    fontSize: 12,
+    color: colors.muted,
+    lineHeight: 1.4,
+  },
+  nav: {
+    padding: '16px 12px',
+    display: 'grid',
+    gap: 5,
+    flex: 1,
+  },
+  navButton: {
+    width: '100%',
+    border: '1px solid transparent',
+    borderRadius: 11,
+    padding: '10px 12px',
+    background: 'rgba(255, 255, 255, 0.48)',
+    color: colors.muted,
+    textAlign: 'left',
+    fontSize: 14,
+    fontWeight: 650,
+    cursor: 'pointer',
+    transition:
+      'background 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease',
+  },
+  navButtonActive: {
+    background:
+      'linear-gradient(135deg, #123B5D 0%, #1677C8 62%, #38BDF8 100%)',
+    borderColor: 'rgba(18, 59, 93, 0.18)',
+    color: '#fff',
+    boxShadow: '0 9px 20px rgba(18, 59, 93, 0.22), 0 0 0 1px rgba(56, 189, 248, 0.08)',
+    transform: 'translateX(2px)',
+  },
+  userArea: {
+    padding: '15px 12px 16px',
+    borderTop: `1px solid ${colors.border}`,
+    background:
+      'linear-gradient(135deg, rgba(239, 246, 255, 0.92) 0%, rgba(240, 253, 250, 0.82) 100%)',
+  },
+  role: {
+    fontSize: 12,
+    fontWeight: 700,
+    color: colors.muted,
+  },
+  username: {
+    marginTop: 3,
+    fontSize: 14,
+    fontWeight: 800,
+    color: colors.text,
+  },
+  signOut: {
+    width: '100%',
+    marginTop: 12,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 10,
+    padding: '10px 12px',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f8fbff 100%)',
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: 700,
+    cursor: 'pointer',
+    textAlign: 'left',
+    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.055)',
+    transition:
+      'background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease',
+  },
+  main: {
+    minHeight: '100vh',
+    marginLeft: SIDEBAR_WIDTH,
+    boxSizing: 'border-box',
+  },
+  mobileTop: {
+    display: 'none',
+  },
+  mobileOverlay: {
+    display: 'none',
+  },
+};
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const { route } = useRoute();
 
-  const [busy, setBusy] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [schoolName, setSchoolName] = useState('School Office Assistant');
+  const [schoolName, setSchoolName] = React.useState('TEST SCHOOL');
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  const nav = user?.role === 'admin' ? ADMIN_NAV : TEACHER_NAV;
+
+  React.useEffect(() => {
+    let active = true;
 
     async function loadSchoolName() {
-      const result = await api.get<{ schoolName: string }>('/settings');
+      try {
+        const result = await api.get<{ schoolName: string }>('/settings');
 
-      if (!cancelled && result.success && result.data?.schoolName?.trim()) {
-        setSchoolName(result.data.schoolName.trim());
+        if (
+          active &&
+          result.success &&
+          result.data?.schoolName?.trim()
+        ) {
+          setSchoolName(result.data.schoolName.trim());
+        }
+      } catch {
+        // Keep the safe fallback school name.
       }
     }
 
     void loadSchoolName();
 
     return () => {
-      cancelled = true;
+      active = false;
     };
   }, []);
 
-  const nav = user?.role === 'admin' ? ADMIN_NAV : TEACHER_NAV;
+  React.useEffect(() => {
+    setMobileOpen(false);
+  }, [route]);
 
-  async function handleLogout() {
-    setBusy(true);
-    await logout();
+  function handleNavigate(nextRoute: RouteName) {
+    navigate(nextRoute);
+    setMobileOpen(false);
+  }
+
+  function handleSignOut() {
+    setMobileOpen(false);
+    void logout();
   }
 
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <div
-          className="header-inner"
-          style={styles.headerInner}
-        >
-          <div
-            className="brand-row"
-            style={styles.brandRow}
-          >
-            <div
-              className="brand-mark"
-              style={styles.brandMark}
-              aria-hidden="true"
-            >
-              SO
-            </div>
+    <div style={styles.shell}>
+      <style>
+        {`
+          @media (max-width: 900px) {
+            .soa-sidebar {
+              transform: translateX(-100%);
+              transition: transform 180ms ease;
+              box-shadow: none;
+            }
 
-            <div
-              className="brand-text"
-              style={styles.brandText}
-            >
-              <span
-                className="app-name"
-                style={styles.appName}
-              >
-                {schoolName}
-              </span>
+            .soa-sidebar.soa-sidebar-open {
+              transform: translateX(0);
+              box-shadow: 12px 0 32px rgba(15, 23, 42, 0.16);
+            }
 
-              <span
-                className="product-name"
-                style={styles.productName}
-              >
-                School Office Assistant
-              </span>
-            </div>
+            .soa-main {
+              margin-left: 0 !important;
+              padding-top: 64px;
+            }
 
-            <span
-              className="role"
-              style={styles.role}
-            >
-              {user?.role}
-            </span>
+            .soa-mobile-top {
+              display: flex !important;
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              height: 64px;
+              background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+              border-bottom: 1px solid ${colors.border};
+              box-shadow: 0 5px 18px rgba(18, 59, 93, 0.08);
+              align-items: center;
+              gap: 12px;
+              padding: 0 14px;
+              z-index: 90;
+            }
+
+            .soa-menu-button {
+              width: 40px;
+              height: 40px;
+              border: 1px solid ${colors.border};
+              border-radius: 10px;
+              background: linear-gradient(135deg, #ffffff 0%, #eef6ff 100%);
+              color: ${colors.primary};
+              font-size: 20px;
+              box-shadow: 0 4px 12px rgba(18, 59, 93, 0.08);
+              transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+              cursor: pointer;
+            }
+
+            .soa-mobile-title {
+              min-width: 0;
+            }
+
+            .soa-mobile-school {
+              font-size: 14px;
+              font-weight: 800;
+              color: ${colors.text};
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .soa-mobile-product {
+              font-size: 11px;
+              color: ${colors.muted};
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .soa-overlay {
+              display: block !important;
+              position: fixed;
+              inset: 0;
+              background: rgba(15, 23, 42, 0.35);
+              z-index: 95;
+            }
+          }
+        `}
+      </style>
+
+      <aside
+        className={`soa-sidebar${mobileOpen ? ' soa-sidebar-open' : ''}`}
+        style={styles.sidebar}
+      >
+        <div style={styles.brand}>
+          <div style={styles.logo}>SO</div>
+          <div style={styles.schoolName}>{schoolName}</div>
+          <div style={styles.productName}>
+            School Office Assistant
           </div>
+        </div>
 
-          <nav
-            id="topnav"
-            style={styles.nav}
-            aria-label="Main navigation"
-          >
-            {nav.map(item => (
+        <nav style={styles.nav} aria-label="Main navigation">
+          {nav.map((item) => {
+            const active = route === item.route;
+
+            return (
               <button
                 key={item.route}
                 type="button"
                 style={{
-                  ...styles.navLink,
-                  ...(route === item.route
-                    ? styles.navLinkActive
-                    : {}),
+                  ...styles.navButton,
+                  ...(active ? styles.navButtonActive : {}),
                 }}
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate(item.route);
-                }}
+                onClick={() => handleNavigate(item.route)}
               >
                 {item.label}
               </button>
-            ))}
-          </nav>
+            );
+          })}
+        </nav>
 
-          <div
-            className="user-info"
-            style={styles.userInfo}
+        <div style={styles.userArea}>
+          <div style={styles.role}>
+            {user?.role === 'admin' ? 'Administrator' : 'Teacher'}
+          </div>
+
+          <div style={styles.username}>
+            {user?.displayName || user?.username || 'User'}
+          </div>
+
+          <button
+            type="button"
+            style={styles.signOut}
+            onClick={handleSignOut}
           >
-            <div
-              className="user-block"
-              style={styles.userBlock}
-            >
-              <span
-                style={styles.displayName}
-                title={user?.username}
-              >
-                {user?.displayName}
-              </span>
+            Sign out
+          </button>
+        </div>
+      </aside>
 
-              <span style={styles.username}>
-                {user?.username}
-              </span>
-            </div>
+      <div
+        className="soa-mobile-top"
+        style={styles.mobileTop}
+      >
+        <button
+          type="button"
+          className="soa-menu-button"
+          aria-label="Open navigation"
+          onClick={() => setMobileOpen(true)}
+        >
+          ?
+        </button>
 
-            <button
-              type="button"
-              className="logout-button"
-              onClick={handleLogout}
-              disabled={busy}
-              style={styles.logoutBtn}
-            >
-              {busy ? 'Signing out…' : 'Sign out'}
-            </button>
-
-            <button
-              type="button"
-              className="mobile-menu-button"
-              style={styles.hamburger}
-              onClick={() => setMenuOpen(open => !open)}
-              aria-label="Toggle navigation"
-              aria-expanded={menuOpen}
-            >
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-              <span className="hamburger-line" />
-            </button>
+        <div className="soa-mobile-title">
+          <div className="soa-mobile-school">{schoolName}</div>
+          <div className="soa-mobile-product">
+            School Office Assistant
           </div>
         </div>
-      </header>
+      </div>
 
-      {menuOpen && (
-        <nav
-          className="mobile-nav"
-          style={styles.mobileNav}
-          aria-label="Mobile navigation"
-        >
-          {nav.map(item => (
-            <button
-              key={`mobile-${item.route}`}
-              type="button"
-              style={{
-                ...styles.mobileLink,
-                ...(route === item.route
-                  ? styles.mobileLinkActive
-                  : {}),
-              }}
-              onClick={() => {
-                setMenuOpen(false);
-                navigate(item.route);
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
+      {mobileOpen && (
+        <button
+          type="button"
+          className="soa-overlay"
+          style={styles.mobileOverlay}
+          aria-label="Close navigation"
+          onClick={() => setMobileOpen(false)}
+        />
       )}
 
-      <main style={styles.main}>
+      <main className="soa-main" style={styles.main}>
         {children}
       </main>
-
-      <style>{`
-        #topnav button:hover {
-          background: rgba(255, 255, 255, 0.08);
-          color: #fff;
-        }
-
-        #topnav button:active {
-          transform: translateY(1px);
-        }
-
-        .logout-button:hover {
-          background: rgba(255, 255, 255, 0.14) !important;
-          border-color: rgba(255, 255, 255, 0.3) !important;
-        }
-
-        .mobile-menu-button:hover {
-          background: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        .hamburger-line {
-          display: block;
-          width: 16px;
-          height: 2px;
-          flex: 0 0 2px;
-          border-radius: 2px;
-          background: #fff;
-        }
-
-        @media (max-width: 1100px) {
-          .user-block {
-            display: none !important;
-          }
-        }
-
-        @media (max-width: 860px) {
-          #topnav {
-            display: none !important;
-          }
-
-          .header-inner {
-            width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            box-sizing: border-box !important;
-            min-height: 62px !important;
-            padding: 0.65rem 1rem !important;
-            gap: 0.65rem !important;
-            flex-wrap: nowrap !important;
-            overflow: hidden !important;
-          }
-
-          .brand-row {
-            flex: 1 1 auto !important;
-            min-width: 0 !important;
-            max-width: none !important;
-            margin-right: 0 !important;
-            overflow: hidden !important;
-          }
-
-          .brand-text {
-            min-width: 0 !important;
-            max-width: 100% !important;
-            overflow: hidden !important;
-          }
-
-          .app-name {
-            display: block !important;
-            max-width: 100% !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-          }
-
-          .product-name {
-            display: block !important;
-            max-width: 100% !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-          }
-
-          .role {
-            flex: 0 0 auto !important;
-          }
-
-          .user-info {
-            flex: 0 0 auto !important;
-            min-width: 38px !important;
-            margin-left: auto !important;
-            gap: 0 !important;
-          }
-
-          .logout-button {
-            display: none !important;
-          }
-
-          .mobile-menu-button {
-            display: inline-flex !important;
-            flex: 0 0 38px !important;
-            width: 38px !important;
-            height: 38px !important;
-            align-items: center !important;
-            justify-content: center !important;
-          }
-
-          .mobile-nav {
-            display: flex !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-            overflow: hidden !important;
-          }
-
-          .mobile-nav button {
-            width: 100% !important;
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-          }
-
-          main {
-            width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            box-sizing: border-box !important;
-            padding: 1rem !important;
-            margin: 0 !important;
-            overflow-x: hidden !important;
-          }
-        }
-
-        @media (max-width: 560px) {
-          .header-inner {
-            min-height: 58px !important;
-            padding: 0.55rem 0.75rem !important;
-            gap: 0.5rem !important;
-          }
-
-          .brand-mark {
-            width: 34px !important;
-            height: 34px !important;
-            flex: 0 0 34px !important;
-            border-radius: 8px !important;
-            font-size: 0.7rem !important;
-          }
-
-          .brand-row {
-            gap: 0.5rem !important;
-          }
-
-          .brand-text {
-            max-width: calc(100vw - 105px) !important;
-          }
-
-          .product-name {
-            display: none !important;
-          }
-
-          .role {
-            display: none !important;
-          }
-
-          .mobile-menu-button {
-            width: 36px !important;
-            height: 36px !important;
-            flex: 0 0 36px !important;
-          }
-
-          main {
-            padding: 0.85rem !important;
-          }
-        }
-
-        @media (max-width: 380px) {
-          .header-inner {
-            padding-left: 0.6rem !important;
-            padding-right: 0.6rem !important;
-          }
-
-          .brand-text {
-            max-width: calc(100vw - 88px) !important;
-          }
-
-          main {
-            padding-left: 0.65rem !important;
-            padding-right: 0.65rem !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    width: '100%',
-    maxWidth: '100%',
-    minWidth: 0,
-    overflowX: 'hidden',
-    overscrollBehaviorX: 'none',
-    background: colors.background,
-  },
-
-  header: {
-    width: '100%',
-    maxWidth: '100%',
-    background:
-      'linear-gradient(135deg, #172554 0%, #1e3a8a 100%)',
-    color: '#fff',
-    position: 'sticky',
-    top: 0,
-    zIndex: 50,
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
-    boxShadow: '0 4px 18px rgba(15,23,42,0.12)',
-  },
-
-  headerInner: {
-    minHeight: 68,
-    maxWidth: 1400,
-    width: '100%',
-    margin: '0 auto',
-    padding: '0.65rem 1.25rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    flexWrap: 'wrap',
-    boxSizing: 'border-box',
-  },
-
-  brandRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.65rem',
-    marginRight: 'auto',
-    minWidth: 0,
-  },
-
-  brandMark: {
-    width: 38,
-    height: 38,
-    flex: '0 0 38px',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'rgba(255,255,255,0.14)',
-    border: '1px solid rgba(255,255,255,0.18)',
-    color: '#fff',
-    fontSize: '0.78rem',
-    fontWeight: 800,
-    letterSpacing: '0.04em',
-  },
-
-  brandText: {
-    display: 'flex',
-    flexDirection: 'column',
-    minWidth: 0,
-    maxWidth: 250,
-  },
-
-  appName: {
-    fontWeight: 750,
-    fontSize: '0.92rem',
-    letterSpacing: '-0.01em',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-
-  productName: {
-    marginTop: 1,
-    color: 'rgba(255,255,255,0.62)',
-    fontSize: '0.67rem',
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-
-  role: {
-    background: 'rgba(255,255,255,0.12)',
-    border: '1px solid rgba(255,255,255,0.12)',
-    borderRadius: 999,
-    padding: '0.22rem 0.55rem',
-    fontSize: '0.66rem',
-    fontWeight: 750,
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
-    whiteSpace: 'nowrap',
-  },
-
-  nav: {
-    display: 'flex',
-    gap: '0.2rem',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-  },
-
-  navLink: {
-    background: 'transparent',
-    color: 'rgba(255,255,255,0.72)',
-    border: '1px solid transparent',
-    borderRadius: 8,
-    padding: '0.46rem 0.68rem',
-    fontSize: '0.8rem',
-    fontWeight: 650,
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    transition:
-      'background 120ms ease, color 120ms ease, transform 120ms ease',
-  },
-
-  navLinkActive: {
-    background: 'rgba(255,255,255,0.14)',
-    color: '#fff',
-    borderColor: 'rgba(255,255,255,0.08)',
-  },
-
-  userInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.65rem',
-    minWidth: 0,
-  },
-
-  userBlock: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    minWidth: 0,
-  },
-
-  displayName: {
-    fontSize: '0.78rem',
-    fontWeight: 700,
-    maxWidth: 150,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-
-  username: {
-    color: 'rgba(255,255,255,0.52)',
-    fontSize: '0.65rem',
-    maxWidth: 150,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-
-  logoutBtn: {
-    background: 'rgba(255,255,255,0.08)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    color: '#fff',
-    borderRadius: 8,
-    padding: '0.42rem 0.7rem',
-    cursor: 'pointer',
-    fontSize: '0.76rem',
-    fontWeight: 650,
-    whiteSpace: 'nowrap',
-    transition:
-      'background 120ms ease, border-color 120ms ease',
-  },
-
-  hamburger: {
-    display: 'none',
-    width: 38,
-    height: 38,
-    flexDirection: 'column',
-    gap: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    background: 'transparent',
-    border: '1px solid rgba(255,255,255,0.2)',
-    color: '#fff',
-    borderRadius: 8,
-    padding: '0.45rem',
-    cursor: 'pointer',
-  },
-
-  mobileNav: {
-    background: '#172554',
-    padding: '0.55rem 1rem 0.8rem',
-    display: 'none',
-    flexDirection: 'column',
-    gap: '0.3rem',
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
-    boxShadow: '0 6px 14px rgba(15,23,42,0.1)',
-    boxSizing: 'border-box',
-  },
-
-  mobileLink: {
-    width: '100%',
-    textAlign: 'left',
-    background: 'transparent',
-    color: 'rgba(255,255,255,0.72)',
-    border: '1px solid transparent',
-    borderRadius: 8,
-    padding: '0.62rem 0.75rem',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-    boxSizing: 'border-box',
-  },
-
-  mobileLinkActive: {
-    background: 'rgba(255,255,255,0.12)',
-    color: '#fff',
-  },
-
-  main: {
-    padding: '1.75rem 1.5rem 2.5rem',
-    maxWidth: 1180,
-    margin: '0 auto',
-    width: '100%',
-    minWidth: 0,
-    boxSizing: 'border-box',
-    overflowX: 'hidden',
-  },
-};
-

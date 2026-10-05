@@ -1,13 +1,13 @@
 import type { CSSProperties } from 'react';
 
 export const colors = {
-  primary: '#172554',
-  primarySoft: '#1e3a8a',
-  accent: '#2563eb',
-  background: '#f5f7fb',
-  card: '#ffffff',
-  border: '#e2e8f0',
-  text: '#172033',
+  primary: '#123B5D',
+  primarySoft: '#1F5A85',
+  accent: '#1677C8',
+  background: '#F4F7FA',
+  card: '#FFFFFF',
+  border: '#D9E2EC',
+  text: '#172B3A',
   muted: '#64748b',
   danger: '#dc2626',
   success: '#15803d',
